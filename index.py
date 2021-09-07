@@ -1,11 +1,10 @@
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, url_for
 import requests
 
 app = Flask(__name__)
 
-
-
-def request_auth(cid="ae94085f9ba742fc811ec3ecfbc1e864"):
+#HELPER FUNCTION
+def request_auth(cid):
     url = "https://accounts.spotify.com/authorize"
     payload = {
         "client_id": cid,
@@ -17,23 +16,14 @@ def request_auth(cid="ae94085f9ba742fc811ec3ecfbc1e864"):
     return requests.get(url, payload)
 
 
-
+#ROUTES 
 @app.route("/")
-def hello_world():
-
-    
-
-    if request.method == "GET":
-        cid = request.form.get('cid')
-        r = request_auth(cid)
-        return redirect("/submit")
-
+def index():
     return render_template('index.html')
 
-
-@app.route("/submit/", methods=['GET', 'POST'])
-def submit():
-    return redirect(request_auth().url)
-
-    # return r.url
-    # return redirect(r.url)
+@app.route('/reroute/', methods=['GET', 'POST'])
+def reroute():
+    
+    cid = request.form['cid']
+    r = request_auth((cid))
+    return redirect(r.url)
